@@ -1,0 +1,150 @@
+import java.util.ArrayList;
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        int locuri = 100;
+        Scanner scanner = new Scanner(System.in);
+        ArrayList<Vehicul> lista = new ArrayList<>();
+
+        //--------------------------------------------------------------------------------------------------------------
+        //crearea celor 3 tipuri de parcare, in functie de vehicul
+        ArrayList<Parcare> parcare = new ArrayList<>();
+
+        Parcare p1 = new Parcare("car",1);
+        p1.initializareLocuri();
+        parcare.add(p1);
+
+        Parcare p2 = new Parcare("bike",10);
+        p2.initializareLocuri();
+        parcare.add(p2);
+
+        Parcare p3 = new Parcare("truck",10);
+        p3.initializareLocuri();
+        parcare.add(p3);
+        //--------------------------------------------------------------------------------------------------------------
+        //posibilitatea crearii obiectelor de tip Vehicul manual sau cu ajutorul unui tablou unidimensional
+
+//        lista.add(new Vehicul("car","NT10ALS","blue"));
+//        lista.add(new Vehicul("car","NT20ALS","blue"));
+//        lista.add(new Vehicul("car","NT30ALS","blue"));
+//        lista.add(new Vehicul("car","NT40ALS","blue"));
+//        lista.add(new Vehicul("bike","IS10ALS","blanc"));
+//        lista.add(new Vehicul("bike","IS20ALS","black"));
+//        lista.add(new Vehicul("bike","IS30ALS","green"));
+//        lista.add(new Vehicul("bike","IS40ALS","red"));
+        int numarVehicule = scanner.nextInt();
+        Vehicul[] vehicule = new Vehicul[numarVehicule];
+
+                for (int j = 0; j < numarVehicule; j++) {
+                    System.out.println("Introduceti tipul vehiculului, numarul de inmatriculare si culoarea vehiculului: ");
+                    String tip = scanner.next();
+                    String numar = scanner.next();
+                    String culoare = scanner.next();
+                    vehicule[j] = new Vehicul(tip, numar, culoare);
+
+                }
+        //adaugarea vehiculelor in parcarea modificand ocuparea acestuia
+                for (Vehicul vehicul : vehicule) {
+                    boolean asociat = false;
+                    for (Parcare parc : parcare) {
+                        for (LocParcare loc : parc.locuriParcare) {
+                            if (!loc.ocupat && vehicul.tip.equals(parc.tip)) {
+                                loc.ocupat = true;
+                                asociat = true;
+                                System.out.println("Vehiculul cu numărul de înmatriculare " + vehicul.numar + " a fost asociat cu locul de parcare " + loc.numar + " din parcare " + parc.tip);
+                                break;
+                            }
+                        }
+                        if (asociat) {
+                            break;
+                        }
+                    }
+                    if (!asociat) {
+                        System.out.println("Nu există locuri de parcare disponibile pentru vehiculul cu numărul de înmatriculare " + vehicul.numar);
+                    }
+                }
+        /*/*-----------------------------------------------------------------------------------------------------------------
+        //afisarea locurilor de parcare
+        for (Parcare parcareObj : parcare) {
+            System.out.println("Locuri de parcare pentru tipul " + parcareObj.tip + ":");
+            for (LocParcare loc : parcareObj.locuriParcare) {
+                System.out.println("Numarul locului de parcare: " + loc.numar);
+            }
+        }*/
+                //-----------------------------------------------------------------------------------------------------------------
+
+                for (Vehicul vehicul : lista) {
+                    for (Parcare parc : parcare) {
+                        for (LocParcare loc : parc.locuriParcare) {
+                            System.out.println("Vehiculul cu numărul de înmatriculare " + vehicul.numar + " a fost asociat cu locul de parcare " + loc.numar + " din parcare " + parc.tip);
+                        }
+                    }
+                }
+        //eliberarea locurilor de parcare in functie de nr de parcare si tipul masinii
+        System.out.println("Ce loc de parcare vreti sa eliberati: ");
+        int locp = scanner.nextInt();
+        scanner.nextLine();
+        System.out.println("Ce tip de vehicul aveti: ");
+        String masinatip = scanner.nextLine();
+
+        for (Vehicul vehicul : vehicule) {
+            for (Parcare parc : parcare) {
+                for (LocParcare loc : parc.locuriParcare) {
+                    if (loc.numar == locp && loc.ocupat && masinatip.equals(parc.tip)) {
+                        // Eliberezi locul de parcare
+                        loc.ocupat = false;
+                        System.out.println("Locul de parcare " + loc.numar + " a fost eliberat.");
+                        // Găsești vehiculul asociat și îl ștergi din listă
+                        lista.remove(vehicul);
+                        System.out.println("Vehiculul cu numărul de înmatriculare " + vehicul.numar + " a fost eliminat din lista.");
+                        // Ieși din bucle pentru a evita operațiile inutile
+                        return;
+                    }
+                }
+            }
+        }
+
+// Dacă ajungi aici, înseamnă că locul de parcare nu a fost găsit sau nu este ocupat
+        System.out.println("Locul de parcare cu numărul " + locp + " nu este ocupat sau nu există.");
+
+
+
+    }
+}
+
+class Vehicul {
+    String tip, numar, culoare;
+    Vehicul(String tip, String numar, String culoare){
+        this.tip = tip;
+        this.numar = numar;
+        this.culoare = culoare;
+    }
+}
+
+class Parcare {
+    String tip;
+    int nrlocuri;
+    ArrayList<LocParcare> locuriParcare;
+    Parcare(String tip, int nrlocuri){
+        this.tip = tip;
+        this.nrlocuri = nrlocuri;
+    }
+    void initializareLocuri() {
+        locuriParcare = new ArrayList<>();
+        for (int i = 1; i <= nrlocuri; i++) {
+            locuriParcare.add(new LocParcare(i));
+        }
+    }
+}
+
+class LocParcare {
+    int numar;
+    boolean ocupat;
+
+    LocParcare(int numar) {
+        this.numar = numar;
+        this.ocupat = false; // Locul de parcare este initial liber
+    }
+}
